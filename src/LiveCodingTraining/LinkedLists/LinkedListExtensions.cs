@@ -1,4 +1,4 @@
-﻿using LiveCodingTraining.LinkedLists.Infrastructure;
+﻿ using LiveCodingTraining.LinkedLists.Infrastructure;
 
 namespace LiveCodingTraining.LinkedLists;
 

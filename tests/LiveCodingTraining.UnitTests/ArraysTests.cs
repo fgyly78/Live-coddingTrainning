@@ -44,6 +44,15 @@ public class ArraysTests
     }
 
     [Fact]
+    public void TwoSum_ReturnsValidAddition()
+    {
+        Assert.Equal([0,2], ArrayTasks.TwoSum([1, 2, 3, 4, 5], 4));
+        Assert.Equal([1,2], ArrayTasks.TwoSum([11, 23, 36, 47, 50], 59));
+        
+        
+    }
+
+    [Fact]
     public void MoveZeroes_ReturnsValidResult()
     {
         Assert.True(new[] { 1, 2, 1, 1, 3, 1, 0, 0, 0, 0 }.SequenceEqual(ArrayTasks.MoveZeroes([

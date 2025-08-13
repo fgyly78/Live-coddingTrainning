@@ -25,6 +25,31 @@ public static class HashTableTasks
     /// </summary>
     public static bool IsIsomorphic(string s, string t)
     {
-        throw new NotImplementedException();
+        if (s.Length != t.Length) return false;
+
+        var map = new Dictionary<char, char>();
+        var mapped = new HashSet<char>();
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            char c1 = s[i];
+            char c2 = t[i];
+
+            if (map.ContainsKey(c1))
+            {
+                if (map[c1] != c2)
+                    return false;
+            }
+            else
+            {
+                if (mapped.Contains(c2))
+                    return false;
+
+                map[c1] = c2;
+                mapped.Add(c2);
+            }
+        }
+
+        return true;
     }
 }

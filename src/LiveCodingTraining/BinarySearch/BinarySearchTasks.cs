@@ -20,7 +20,9 @@ public static class BinarySearchTasks
     /// </summary>
     public static bool IsPerfectSquare(int n)
     {
-        throw new NotImplementedException();
+        if (n == 0) return false;
+        int root = (int)Math.Sqrt(n);
+        return root * root == n;
     }
     
     

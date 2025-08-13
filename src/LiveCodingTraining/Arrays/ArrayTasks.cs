@@ -1,4 +1,8 @@
-﻿namespace LiveCodingTraining.Arrays;
+﻿using KellermanSoftware.CompareNetObjects.TypeComparers;
+using System.Net.WebSockets;
+using System.Reflection;
+
+namespace LiveCodingTraining.Arrays;
 
 public static class ArrayTasks
 {
@@ -10,7 +14,18 @@ public static class ArrayTasks
     /// </summary>
     public static bool IsAllPossibilities(int[] arr)
     {
-        throw new NotImplementedException();
+        if (arr == null || arr.Length == 0)
+            return false;
+
+        Array.Sort(arr);
+
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (arr[i] != i)
+                return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -20,7 +35,20 @@ public static class ArrayTasks
     /// </summary>
     public static List<int> MaxMinArray(List<int> arr)
     {
-        throw new NotImplementedException();
+        var list = new List<int>();
+        while (arr.Count != 0)
+        {
+            list.Add(arr.Max());
+            arr.Remove(arr.Max());
+            if (arr.Count > 0)
+            {
+                list.Add(arr.Min());
+                arr.Remove(arr.Min());
+            }
+            else break;
+        }
+
+        return list;
     }
 
     /// <summary>
@@ -29,10 +57,26 @@ public static class ArrayTasks
     /// [1, 2, 3] --> "321" (3-2-1)
     /// [3, 30, 34, 5, 9] --> "9534330" (9-5-34-3-30)
     /// </summary>
+    /// нужно перевести массив в строку, затем обратно посимвольно. Отсортировать в обратном порядке и снова спарсить в строку.
     public static string Biggest(int[] numbers)
     {
-        throw new NotImplementedException();
+        if (numbers == null || numbers.Length == 0) return "0";
+
+        var strNumbers = numbers
+            .Select(n => n.ToString())
+            .ToList();
+
+        // Сортируем по правилу: a + b > b + a
+        strNumbers.Sort((a, b) => (b + a).CompareTo(a + b));
+
+        // Убираем случай, когда результат — "00...0"
+        if (strNumbers[0] == "0")
+            return "0";
+
+        return string.Concat(strNumbers);
     }
+
+
 
     /// <summary>
     /// ИСПОЛЬЗОВАНО НА СОЗВОНЕ
@@ -45,7 +89,32 @@ public static class ArrayTasks
     /// </summary>
     public static int MinimumToPrime(int[] numbers)
     {
-        throw new NotImplementedException();
+        var flag = true;
+        int number = 0;
+        var sum = numbers.Sum();
+        while (flag)
+        {
+            if (SimpleNumberCheck(number + sum))
+            {
+                flag = false;
+                return number;
+            }
+            else number++;
+        }
+        return number;
+    }
+
+    public static bool SimpleNumberCheck(int number)
+    {
+        for (int i = 2; i < 10; i++)
+        {
+            if (i == number) continue;
+            if (number % i == 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
@@ -57,7 +126,14 @@ public static class ArrayTasks
     /// <returns></returns>
     public static int[] MoveZeroes(int[] arr)
     {
-        throw new NotImplementedException();
+        var listNums = new List<int>();
+        var listZeroes = new List<int>();
+        foreach (var n in arr)
+        {
+            if (n == 0) listZeroes.Add(0);
+            else listNums.Add(n);
+        }
+        return listNums.Concat(listZeroes).ToArray();
     }
 
     /// ИСПОЛЬЗОВАНО НА СОЗВОНЕ
@@ -68,7 +144,18 @@ public static class ArrayTasks
     /// Ограничение сложности алгоритма O(n)
     public static int[] TwoSum(int[] numbers, int target)
     {
-        throw new NotImplementedException();
+        var result = new int[2];
+        var left = 0;
+        var right = numbers.Length - 1;
+        while (left < right)
+        {
+            if (numbers[left] + numbers[right] == target) break;
+            else if (numbers[left] + numbers[right] < target) left++;
+            else right--;
+        }
+        result[0] = left;
+        result[1] = right;
+        return result;
     }
 
     public static int[] Intersection(int[] nums1, int[] nums2)
@@ -110,10 +197,15 @@ public static class ArrayTasks
     /// </summary>
     public static int FindMissingNumber(int[] nums)
     {
-        throw new NotImplementedException();
+        var result = 0;
+        for (int i = 0; i <= nums.Length; i++)
+        {
+            if (!nums.Contains(i)) result = i;
+        }
+        return result;
     }
-    
-        /// <summary>
+
+    /// <summary>
     /// Метод принимает массив интервалов в виде массива пар [start, end], где каждый интервал отсортирован (start ≤ end).
     /// Необходимо объединить все перекрывающиеся интервалы и вернуть массив непересекающихся интервалов.
     /// Вернуть пустой массив, если входные интервалы отсутствуют.
@@ -137,9 +229,36 @@ public static class ArrayTasks
     /// <returns>Массив объединенных непересекающихся интервалов</returns>
     public static int[][] MergeIntervals(int[][] intervals)
     {
-        throw new NotImplementedException();
+        if (intervals.Length == 0)
+            return Array.Empty<int[]>();
+
+        // 1. Сортируем интервалы по начальному элементу
+        intervals = intervals.OrderBy(x => x[0]).ToArray();
+
+        var result = new List<int[]>();
+        var current = intervals[0];
+
+        for (int i = 1; i < intervals.Length; i++)
+        {
+            var next = intervals[i];
+
+            // Если пересекаются
+            if (current[1] >= next[0])
+            {
+                current[1] = Math.Max(current[1], next[1]); // расширяем конец
+            }
+            else
+            {
+                result.Add(current);
+                current = next;
+            }
+        }
+
+        result.Add(current); // добавляем последний интервал
+        return result.ToArray();
     }
-        
+
+
     /// <summary>
     /// Сжимает массив по правилу: если подряд идут 3 или более одинаковых числа,
     /// заменяет их на одно такое число. Остальные числа оставляет без изменений.
@@ -158,7 +277,7 @@ public static class ArrayTasks
     {
         throw new NotImplementedException();
     }
-    
+
     // Задача: Монотонность массива
     // Массив называется монотонным, если он либо монотонно возрастающий, либо монотонно убывающий.
     // Массив A монотонно возрастающий если A[i] <= A[i+1] для всех i.
@@ -187,7 +306,7 @@ public static class ArrayTasks
 
         return isUp || isDown;
     }
-    
+
     // Задача: Группировка одинаковых элементов
     // Дан массив целых чисел. Необходимо переместить все одинаковые элементы вместе,
     // сохраняя их относительный порядок. Порядок групп должен соответствовать первому
